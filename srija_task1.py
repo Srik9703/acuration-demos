@@ -8,11 +8,6 @@ Original file is located at
 """
 
 
-
-
-
-
-
 #extracting urls from sitemap
 import requests
 from bs4 import BeautifulSoup
@@ -31,9 +26,6 @@ def parse_sitemap(sitemap_path):
     for i in loc_tags:
           urls_list.append(i.get_text())
     #print("no.of urls=",len(urls_list))
-    #for i in urls_list:
-    # if "pdf" in i:
-    #   print(i)
     return urls_list
   except Exception as e:
         print(f"An error occurred: {e}")
@@ -80,6 +72,9 @@ from bs4 import BeautifulSoup
 
 def save_to_file(text,path,name):
   try:
+    path+="/html_text"
+    if not os.path.exists(folder_path):
+          os.makedirs(folder_path)
     #check if file already exsists
     if exists(name):
           print('HTML file already exists')
@@ -92,31 +87,56 @@ def save_to_file(text,path,name):
   except Exception as e:
         print(f'An error occurred while saving to file {name}: {e}')
 
-from bs4 import BeautifulSoup
+#generating filenames for files
+from pathlib import Path
+from urllib.parse import urlparse, unquote
+
+def generate_file_name(url):
+    # Parse URL to get path
+    path = urlparse(url).path
+    # Remove special characters and decode URL encoding
+    filename = unquote("".join([c if c.isalnum() or c in ('_', '-') else '_' for c in path]))
+    # Limit filename length to avoid issues
+    filename = filename[:255]  # Adjust the limit as needed
+    return filename
+
+#to download pdf from url
 import requests
-import mimetypes
-
-from os.path import exists
-
-
-def crawl_url(url, folder_path):
-
-    filename=url.replace("/","_")
-    try:
-# url is pdf
-      if filename.endswith(".pdf"):
-        #checking if it already exsists
+import os
+from urllib.parse import urlparse
+def download_pdf(url,folder_path):
+        folder_path+="/pdfs"
+        if not os.path.exists(folder_path):
+              os.makedirs(folder_path)
+        filename=generate_file_name(url)+".pdf"
         if exists(filename):
           print('file already exists')
           return
-        #downloading pdf
+
         response = requests.get(link)
         pdf = open(os.path.join(folder_path,filename), 'wb')
         pdf.write(response.content)
         pdf.close()
 
-#other urls
-      else:
+
+#crawling urls of sitemap
+from bs4 import BeautifulSoup
+import requests
+from urllib.parse import urlparse
+
+
+def crawl_url(url, folder_path):
+  #to check type of url
+  try:
+    r = requests.get(url)
+    content_type = r.headers.get('content-type')
+#pdf file
+    if 'application/pdf' in content_type:
+      download_pdf(url, folder_path)
+#html file
+    #elif 'text/html' in content_type:
+    else:
+        filename = generate_file_name(url)
         if exists(filename):
           print('file already exists')
           return
@@ -129,11 +149,13 @@ def crawl_url(url, folder_path):
         # Store the HTML content and extracted text in separate files within the folder.
         # here filename is the crawled_url_in_underscores
 
-
-        save_to_file(soup.prettify(), folder_path, f"{filename}_html.html")
-        save_to_file(extracted_text, folder_path, f"{filename}_extracted_text.txt")
-    except Exception as e:
+        save_to_file(soup.prettify(), folder_path, f"{filename}.html")
+        save_to_file(extracted_text, folder_path, f"{filename}.txt")
+    #else:
+     # print('Unknown type: {}'.format(content_type))
+  except Exception as e:
       print(url,e)
+
 
 #main function getting sitemap_path
 import os
@@ -149,16 +171,6 @@ urls_list=parse_sitemap(sitemap_path)
 for link in urls_list:
     #cleaning and extracting data
     crawl_url(link,"/content/task1")
-
-from bs4 import BeautifulSoup
-import requests
-from os.path import exists
-
-link="https://honeywell.com/content/dam/honeywellbt/en/documents/downloads/Honeywell-Hungary-%C3%89ves-energetikai-szakreferensi-riport-2020-Magyar.pdf"
-response = requests.get(link)
-pdf = open(os.path.join("/content/demo","name"), 'wb')
-pdf.write(response.content)
-pdf.close()
 
 
 
