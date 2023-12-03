@@ -7,7 +7,6 @@ Original file is located at
     https://colab.research.google.com/drive/1vgaQ1ysZgCy_XkMXuYAHVmkysFCFhues
 """
 
-
 #extracting urls from sitemap
 import requests
 from bs4 import BeautifulSoup
