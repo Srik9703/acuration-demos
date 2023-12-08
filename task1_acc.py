@@ -25,7 +25,12 @@ def parse_sitemap(sitemap_path):
     for i in loc_tags:
           urls_list.append(i.get_text())
     #print("no.of urls=",len(urls_list))
+<<<<<<< HEAD:srija_task1.py
     return urls_list
+=======
+
+    return list(set(urls_list))
+>>>>>>> a6462a62bbd3ab78c845301f7c9a1e8526d2e37c:task1_acc.py
   except Exception as e:
         print(f"An error occurred: {e}")
         return None
@@ -86,7 +91,11 @@ def save_to_file(text,path,name):
   except Exception as e:
         print(f'An error occurred while saving to file {name}: {e}')
 
+<<<<<<< HEAD:srija_task1.py
 #generating filenames for files
+=======
+from urllib.parse import urlparse
+>>>>>>> a6462a62bbd3ab78c845301f7c9a1e8526d2e37c:task1_acc.py
 from pathlib import Path
 from urllib.parse import urlparse, unquote
 
@@ -99,7 +108,10 @@ def generate_file_name(url):
     filename = filename[:255]  # Adjust the limit as needed
     return filename
 
+<<<<<<< HEAD:srija_task1.py
 #to download pdf from url
+=======
+>>>>>>> a6462a62bbd3ab78c845301f7c9a1e8526d2e37c:task1_acc.py
 import requests
 import os
 from urllib.parse import urlparse
@@ -117,8 +129,11 @@ def download_pdf(url,folder_path):
         pdf.write(response.content)
         pdf.close()
 
+<<<<<<< HEAD:srija_task1.py
 
 #crawling urls of sitemap
+=======
+>>>>>>> a6462a62bbd3ab78c845301f7c9a1e8526d2e37c:task1_acc.py
 from bs4 import BeautifulSoup
 import requests
 from urllib.parse import urlparse
@@ -160,16 +175,36 @@ def crawl_url(url, folder_path):
 import os
 import requests
 
-folder_path="/content/task1"
+folder_path="/content/drive/MyDrive/crawled_data"
 sitemap_path="https://raw.githubusercontent.com/Acuration/acuration-data-store/main/honeywell_sitemap.xml"
 if not os.path.exists(folder_path):
     os.makedirs(folder_path)
-    #to get list of links in siitemap
+
+
 urls_list=parse_sitemap(sitemap_path)
 
 for link in urls_list:
     #cleaning and extracting data
-    crawl_url(link,"/content/task1")
+    crawl_url(link,"/content/drive/MyDrive/crawled_data")
 
+<<<<<<< HEAD:srija_task1.py
+=======
+from bs4 import BeautifulSoup
+import requests
+from os.path import exists
 
+link="https://honeywell.com/content/dam/honeywellbt/en/documents/downloads/Honeywell-Hungary-%C3%89ves-energetikai-szakreferensi-riport-2020-Magyar.pdf"
+response = requests.get(link)
+pdf = open(os.path.join("/content/demo","name"), 'wb')
+pdf.write(response.content)
+pdf.close()
 
+import os, os.path
+>>>>>>> a6462a62bbd3ab78c845301f7c9a1e8526d2e37c:task1_acc.py
+
+# simple version for working with CWD
+print (len([name for name in os.listdir('.') if os.path.isfile(name)]))
+
+# path joining version for other paths
+DIR = '/content/drive/MyDrive/crawled_data/html_text'
+print (len([name for name in os.listdir(DIR) if os.path.isfile(os.path.join(DIR, name))]))
